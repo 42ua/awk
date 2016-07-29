@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="icon" type="image/png" href="assets/gnu-head-mini.png" />
+
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>AWK live editor</title>
+
+    <!-- Bootstrap -->
+    <link href="assets/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <link href="assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+      body {
+        position: relative; 
+      }
+      .footer {margin: 25px;}
+      .manual-header {padding-top:50px; padding-bottom:50px; color: #fff; }
+
+      .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+          border: none;
+      }
+
+      .table-auto-width {
+          width: auto;
+      }
+
+      #introduction {background-color: #7f4c00;}
+      div[id^="programs-"] { background-color: #331d5b;}
+      div:nth-child(even)[id^="programs-"] { background-color: #005e6a;}
+      div[id^="practice-"] { background-color: #004b44;}
+      div:nth-child(even)[id^="practice-"] { background-color: #005836;}
+      #further-reading {background-color: #e7e7e7;}
+    </style>
+  </head>
+
+  <body data-spy="scroll" data-target=".navbar" data-offset="50">
+    <nav class="navbar navbar-default navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>                        
+          </button>
+          <a class="navbar-brand" href="index.html"><span class="glyphicon glyphicon-education"></span> AWK REPL</a>
+        </div>
+        <div>
+          <div class="collapse navbar-collapse" id="myNavbar">
+            <ul class="nav navbar-nav">
+              <li><a href="#introduction">Introduction</a></li>
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Theory <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#programs-struct">Program structure</a></li>
+                  <li><a href="#programs-data-types">Data types, conversion and comparison</a></li>
+                  <li><a href="#programs-re">Regular expressions</a></li>
+                  <li><a href="#programs-records-fields">Records and fields</a></li>
+                  <li><a href="#programs-expr-ops">Expressions and operators</a></li>
+                  <li><a href="#programs-arrays">Arrays</a></li>
+                  <li><a href="#programs-builtin-vars">Built-in variables</a></li>
+                  <li><a href="#programs-builtin-fn">Built-in functions</a></li>
+                  <li><a href="#programs-io">Input and output</a></li>
+                  <li><a href="#programs-user-fn">User defined functions</a></li>
+                  <li><a href="#programs-split">Splitting strings, records and files</a></li>
+                </ul>
+              </li>
+
+              <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#">Practice <span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                  <li><a href="#practice-simple">Simple Uses</a></li>
+                  <li><a href="#practice-vars">Built-in Variables</a></li>
+                  <li><a href="#practice-arrays">Arrays</a></li>
+                  <li><a href="#practice-flow">Control Flow</a></li>
+                  <li><a href="#practice-loops">Loops</a></li>
+                  <li><a href="#practice-user-fn">User Defined Functions</a></li>
+                </ul>
+              </li>
+
+              <li><a href="#further-reading">Further Reading</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>    
+
+    <div id="introduction" class="container-fluid manual-header">
+        <h1>1. awk.js</h1>
+      <p><b>mawk</b> - pattern scanning and text processing language compiled to JavaScript</p>
+
+      <p><b>mawk</b> is an interpreter for the AWK Programming Language.  
+       The AWK language is useful for manipulation of data files, text retrieval and pro
+       cessing, and for prototyping and experimenting with algorithms. <b>mawk</b>
+       is a <b>new awk</b> meaning it implements the AWK language as defined in  Aho,
+       Kernighan and Weinberger, <b>The AWK Programming Language</b>, Addison-Wesley
+       Publishing, 1988 (hereafter referred to as the AWK  book.) <b>mawk</b> conforms  
+       to the POSIX 1003.2 (draft 11.3) definition of the AWK language
+       which contains a few features not described in the AWK book, and <b>mawk</b>
+       provides a small number of extensions.
+      </p>
+
+      <p>An  AWK  program  is  a sequence of <b>pattern {action}</b> pairs and 
+       function definitions. Data  input is broken into records as determined by 
+       the record separator  variable,  <b>RS</b>.  Initially, <b>RS</b> = "\n" 
+       and records are synonymous with lines. Each record is compared against 
+       each pattern  and  if it matches, the program text for <b>{action}</b> is executed.
+      </p>
+
+      <p>May be invoked with the following command-line options:</p>
+
+      <ul>
+        <li>
+          <p>
+            <code>-F value</code><br/>
+              sets the field separator, FS, to value.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>-v var=value</code><br/>
+              assigns value to program variable var.
+          </p>
+        </li>
+
+        <li>
+          <p>
+          <code>-W dump</code><br/>
+            writes an assembler like listing of the internal  representation  
+            of the program to stdout and exits 0 (on successful compilation). 
+          </p>
+        </li> 
+        <li>
+          <p>
+            <code>-W help</code><br/>
+              prints  a  usage  message  to  stderr and exits (same as
+              <code>-W usage</code>).
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>-W posix_space</code><br/>
+              forces mawk not to consider '\n' to be space.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>-W random=num</code><br/>
+              calls srand with the given parameter (and overrides  the
+              auto-seeding behavior).
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>-W sprintf=num</code><br/>
+              adjusts the size of mawk's internal sprintf buffer to
+              num bytes. More than rare use of this option  indicates
+              mawk should be recompiled.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>-W version</code><br/>
+              mawk writes its version and copyright to stdout and compiled limits to stderr.
+          </p>
+        </li>
+      </ul>
+
+      <p>
+        mawk  accepts  abbreviations for any of these options, e.g., <code>-W v</code> and
+       <code>-Wv</code> both tell mawk to show its version.
+      </p>
+
+      <p>
+        mawk allows multiple <code>-W</code>  options  to  be  combined  by  separating  the
+        options  with  commas,  e.g.,  <code>-Wsprint=2000,posix</code>.
+      </p>
+    </div>
+    <div id="programs-struct" class="container-fluid manual-header">
+      <h1>2. Program structure</h1>
+      <p>
+        An  AWK  program is a sequence of pattern <b>{action}</b> pairs and user function definitions.
+      </p>
+      <p>
+        A pattern can be:
+      </p>
+
+      <ul>
+        <li>
+          <p><b>BEGIN</b></p>
+        </li>
+        <li>
+          <p><b>END</b></p>
+        </li>
+        <li>
+          <p>expression</p>
+        </li>
+        <li>
+          <p>expression , expression</p>
+        </li>
+      </ul>
+
+      <p>
+       One, but <b>not both</b>, of pattern <b>{action}</b> can be omitted. 
+       If <b>{action}</b> is omitted  it is implicitly <code>{ print }</code>.
+       If pattern is omitted, then it is implicitly matched. 
+       <b>BEGIN</b> and <b>END</b> patterns require an action.
+      </p>
+
+      <p>
+       Statements are terminated by newlines, semi-colons or both.  Groups  of
+       statements such as actions or loop bodies are blocked via { ... } as in
+       C.  The last statement in a block doesn't  need  a  terminator.   Blank
+       lines  have  no  meaning; an empty statement is terminated with a 
+       semicolon.  Long statements can be continued with a backslash, <code>\</code>. 
+       A statement  
+       can  be broken without a backslash after a comma, left brace, <code>&amp;&amp;</code>,
+       <code>||</code>, <code>do</code>, <code>else</code>, the right parenthesis of an <code>if</code>, <code>while</code> or  <code>for</code>  statement,
+       and  the  right parenthesis of a function definition.  A comment starts
+       with <code>#</code> and extends to, but does not include the end of line.
+      </p>
+      <p>
+        The following statements control program flow inside blocks.
+      </p>
+      <ul>
+        <li>
+          <p><b>if</b> ( expr ) statement</p>
+        </li>
+        <li>
+          <p><b>if</b> ( expr ) statement <b>else</b> statement</p>
+        </li>
+        <li>
+          <p><b>while</b> ( expr ) statement</p>
+        </li>
+        <li>
+          <p><b>do</b> statement <b>while</b> ( expr )</p>
+        </li>
+        <li>
+          <p><b>for</b> ( opt_expr ; opt_expr ; opt_expr ) statement</p>
+        </li>
+        <li>
+          <p><b>for</b> ( var <b>in</b> array ) statement</p>
+        </li>
+        <li>
+          <p><b>continue</b></p>
+        </li>
+        <li>
+          <p><b>break</b></p>
+        </li>
+      </ul>
+
+    </div>
+
+    <div id="programs-data-types" class="container-fluid manual-header">
+      <h1>2.1. Data types, conversion and comparison</h1>
+
+      <p>
+        There are two basic data types, numeric and string.  Numeric  constants
+       can  be  integer  like -2, decimal like 1.08, or in scientific notation
+       like -1.1e4 or .28E-3.  All numbers are represented internally and  all
+       computations  are  done  in floating point arithmetic.  So for example,
+       the expression 0.2e2 == 20 is true and true is represented as 1.0.
+      </p>
+
+      <p>
+       String constants are enclosed in double quotes: <b>"This is a string with a newline at the end.\n"</b>
+      </p>
+
+      <p>
+       Strings can be continued across a line by  escaping  (\)  the  newline.
+       The following escape sequences are recognized.
+      </p>
+
+      <table class="table table-borderless table-auto-width">
+        <tbody> 
+          <tr> <td></td><td><code>\\</code></td> <td>\</td> </tr>
+          <tr> <td></td><td><code>\"</code></td> <td>"</td> </tr>
+          <tr> <td></td><td><code>\a</code></td> <td>alert, ascii 7</td> </tr> 
+          <tr> <td></td><td><code>\b</code></td> <td>backspace, ascii 8</td> </tr> 
+          <tr> <td></td><td><code>\t</code></td> <td>tab, ascii 9</td> </tr> 
+          <tr> <td></td><td><code>\n</code></td> <td>newline, ascii 10</td> </tr> 
+          <tr> <td></td><td><code>\v</code></td> <td>vertical tab, ascii 11</td> </tr> 
+          <tr> <td></td><td><code>\f</code></td> <td>formfeed, ascii 12</td> </tr> 
+          <tr> <td></td><td><code>\r</code></td> <td>carriage return, ascii 13</td> </tr> 
+          <tr> <td></td><td><code>\ddd</code></td> <td>1, 2 or 3 octal digits for ascii ddd</td> </tr> 
+          <tr> <td></td><td><code>\xhh</code></td> <td>1 or 2 hex digits for ascii  hh</td> </tr> 
+        </tbody> 
+      </table>
+
+      <p>
+        If  you  escape  any other character \c, you get \c, i.e., mawk ignores
+       the escape.
+      </p>
+      <p>
+        There are really three basic data types; the third is number and string
+       which  has  both  a  numeric value and a string value at the same time.
+       User defined variables come into existence when  first  referenced  and
+       are  initialized  to  <b>null</b>, a number and string value which has numeric
+       value 0 and string value "".  Non-trivial number and string typed  data
+       come from input and are typically stored in fields.
+      </p>
+      <p>
+        The  type  of  an expression is determined by its context and automatic
+       type conversion occurs if needed.  For example, to evaluate the  statements:
+      </p>
+      <p><code>y = x + 2  ;  z = x  "hello"</code></p>
+      <p>
+        the  value  stored  in  variable  y will be typed numeric.  If x is not
+       numeric, the value read from x is converted to  numeric  before  it  is
+       added  to  2  and  stored in y.  The value stored in variable z will be
+       typed string, and the value of x will be converted to string if  necessary  and  concatenated  with  "hello".  (Of course, the value and type
+       stored in x is not changed by any conversions.)  A string expression is
+       converted  to numeric using its longest numeric prefix as with <code>atof</code>.
+       A numeric expression is converted to  string  by  replacing  expr  with
+       <b>sprintf(CONVFMT,  expr)</b>,  unless  expr  can  be represented on the host
+       machine as an exact integer  then  it  is  converted  to  <b>sprintf("%d",
+       expr)</b>.   Sprintf() is an AWK built-in that duplicates the functionality
+       of <code>sprintf</code>, and <b>CONVFMT</b> is a built-in  variable  used  for  internal
+       conversion  from  number to string and initialized to "%.6g".  Explicit
+       type conversions can be  forced,  expr  ""  is  string  and  expr+0  is
+       numeric.
+      </p>
+      <p>
+        To evaluate, expr1 <b>rel-op</b> expr2, if both operands are numeric or number
+       and string then the comparison is numeric; if both operands are  string
+       the  comparison is string; if one operand is string, the non-string op-
+       erand is converted  and  the  comparison  is  string.   The  result  is
+       numeric, 1 or 0.
+      </p>
+
+      <p>
+       In boolean contexts such as, <code>if ( expr ) statement</code>, a string expression
+       evaluates true if and only if it is not the empty  string  "";  numeric
+       values if and only if not numerically zero.
+      </p>
+
+    </div>
+
+    <div id="programs-re" class="container-fluid manual-header">
+      <h1>2.2. Regular Expressions</h1>
+      <p>
+        In  the  AWK language, records, fields and strings are often tested for
+       matching a regular expression.  Regular  expressions  are  enclosed  in
+       slashes, and
+      </p>
+      <p><code>expr ~ /r/</code></p>
+      <p>
+        is  an  AWK  expression  that evaluates to 1 if expr "matches" r, which
+       means a substring of expr is in the set of strings defined by r.   With
+       no  match  the  expression  evaluates  to  0; replacing ~ with the "not
+       match" operator, !~ , reverses the meaning.  As  pattern-action pairs,
+      </p>
+      <p><code>/r/ { action }</code> and <code>$0 ~ /r/ { action }</code></p>
+      <p>
+       are the same, and for each input record that matches r, action is executed. 
+       In  fact, <code>/r/</code> is an AWK expression that is equivalent to <code>$0 ~
+       /r/</code> anywhere except when on the right side  of  a  match  operator  or
+       passed  as  an  argument  to a built-in function that expects a regular
+       expression argument.
+      </p>
+
+      <p>
+       AWK uses extended regular expressions as with <a href='http://grep.js.org/'>egrep</a>.   The  regular
+       expression  metacharacters, i.e., those with special meaning in regular
+       expressions are
+      </p>
+
+      <p><code>^ $ . [ ] | ( ) * + ?</code></p>
+
+      <p>Regular expressions are built up from characters as follows:</p>
+
+      <ul>
+        <li>
+          <p>
+            <code>c</code><br/>
+            matches any non-metacharacter c
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>\c</code><br/>
+            matches a character  defined  by  the  same  escape
+                           sequences  used  in string constants or the literal
+                           character c if \c is not an escape sequence
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>.</code><br/>
+            matches any character (including newline)
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>^</code><br/>
+            matches the front of a string
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>$</code><br/>
+            matches the back of a string
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>[c1c2c3...]</code><br/>
+            matches any character in the class c1c2c3... .   An
+            interval  of  characters  is denoted c1-c2 inside a class [...]
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>[^c1c2c3...]</code><br/>
+            matches any character not in the class c1c2c3...
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>r1r2</code><br/>
+              matches  r1  followed immediately by r2 (concatenation)
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>r1 | r2</code><br/>
+            matches r1 or r2 (alternation)
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>r*</code><br/>
+            matches r repeated zero or more times
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>r+</code><br/>
+            matches r repeated one or more times
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>r?</code><br/>
+            matches r zero or once
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>(r)</code><br/>
+            matches r, providing grouping
+          </p>
+        </li>
+      </ul>
+
+      <p>
+        The increasing precedence of operators  is  alternation,  concatenation
+       and unary (*, + or ?).
+      </p>
+
+      <p>
+        For example:
+      </p>
+
+      <p>
+        <code>/^[_a-zA-Z][_a-zA-Z0-9]*$/</code> 
+      </p>
+      <p>and</p>
+      <p>
+        <code>/^[-+]?([0-9]+\.?|\.[0-9])[0-9]*([eE][-+]?[0-9]+)?$/</code>
+      </p>
+      <p>
+        are  matched by AWK identifiers and AWK numeric constants respectively.
+       Note that "." has to be escaped to be recognized as  a  decimal  point,
+       and that metacharacters are not special inside character classes
+      </p>
+
+      <p>
+       Any expression can be used on the right hand side of the ~ or !~ operators 
+       or passed to a built-in that expects  a  regular  expression.   If
+       needed,  it  is  converted to string, and then interpreted as a regular
+       expression.  For example:
+      </p>
+
+      <p>
+        <script src="https://gist.github.com/anonymous/381a49282419d34cae74f7c3c9f0199c.js"></script>
+      </p>
+
+      <p>
+        prints all lines that start with an AWK identifier
+      </p>
+
+    </div>
+    <div id="programs-records-fields" class="container-fluid manual-header">
+      <h1>2.3. Records and fields</h1>
+      <p>
+       Records are read in one at a time, and stored in the field variable <b>$0</b>.
+       The  record  is split into fields which are stored in <b>$1</b>, <b>$2</b>, ..., <b>$NF</b>.
+       The built-in variable <b>NF</b> is set to the number of fields, and <b>NR</b> and <b>FNR</b>
+       are incremented by 1.  Fields above <b>$NF</b> are set to "".
+      </p>
+
+      <p>
+       Assignment to <b>$0</b> causes the fields and <b>NF</b> to be recomputed.  Assignment
+       to <b>NF</b> or to a field causes <b>$0</b> to be reconstructed by concatenating  the
+       <b>$i's</b>  separated  by <b>OFS</b>.  Assignment to a field with index greater than
+       <b>NF</b>, increases <b>NF</b> and causes <b>$0</b> to be reconstructed.
+      </p>
+
+      <p>
+       Data input stored in fields is string,  unless  the  entire  field  has
+       numeric form and then the type is number and string.  For example <a href='index.html?gist=9cbc0baef21794e8df6986200da91501' rel="nofollow" target="_blank">GIST</a>:
+      </p>     
+      <p>
+        <script src="https://gist.github.com/anonymous/9cbc0baef21794e8df6986200da91501.js"></script>
+      </p>
+
+      <p>
+        <b>$0</b> and <b>$2</b> are string and <b>$1</b> is number and string.  The first comparison
+       is numeric, the second is string, the third is string (100 is converted
+       to "100"), and the last is string.
+      </p>
+    </div>
+
+    <div id="programs-expr-ops" class="container-fluid manual-header">
+      <h1>2.4. Expressions and operators</h1>
+      <p>
+       The expression syntax is similar to C.  Primary expressions are numeric
+       constants, string constants, variables,  fields,  arrays  and  function
+       calls.   The  identifier  for  a  variable,  array or function can be a
+       sequence of letters, digits and underscores, that does not start with a
+       digit.   Variables  are  not declared; they exist when first referenced
+       and are initialized to <b>null</b>.
+      </p>
+
+      <p>
+       New expressions are composed with the following operators in  order  of
+       increasing precedence.
+      </p>
+
+      <table class="table table-borderless table-auto-width">
+        <tbody> 
+          <tr> <td></td><td>assignment</td> <td><code>=</code> <code>+=</code> <code>-=</code> <code>*=</code> <code>/=</code> <code>%=</code> <code>^=</code></td> </tr>
+          <tr> <td></td><td>conditional</td> <td><code>?</code> <code>:</code></td> </tr>
+          <tr> <td></td><td>logical or</td> <td><code>||</code></td> </tr> 
+          <tr> <td></td><td>logical and</td> <td><code>&amp;&amp;</code></td> </tr> 
+          <tr> <td></td><td>array membership</td> <td><code>in</code></td> </tr> 
+          <tr> <td></td><td>matching</td> <td><code>~</code> <code>!~</code></td> </tr> 
+          <tr> <td></td><td>relational</td> <td><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code> <code>==</code> <code>!=</code></td> </tr> 
+          <tr> <td></td><td>concatenation</td> <td>(no explicit operator)</td> </tr> 
+          <tr> <td></td><td>add ops</td> <td><code>+</code> <code>-</code></td> </tr> 
+          <tr> <td></td><td>mul ops</td> <td><code>*</code> <code>/</code> <code>%</code></td> </tr> 
+          <tr> <td></td><td>unary</td> <td><code>+</code> <code>-</code></td> </tr> 
+          <tr> <td></td><td>logical not</td> <td><code>!</code></td> </tr> 
+          <tr> <td></td><td>exponentiation</td> <td><code>^</code></td> </tr> 
+          <tr> <td></td><td>inc and dec</td> <td><code>++</code> <code>--</code> (both post and pre)</td> </tr>
+          <tr> <td></td><td>field</td> <td><code>$</code></td> </tr> 
+        </tbody> 
+      </table>
+
+      <p>
+        Assignment, conditional and exponentiation associate right to left; the
+       other operators associate left to right.  Any expression can be  parenthesized.
+      </p>
+    </div>
+
+    <div id="programs-arrays" class="container-fluid manual-header">
+      <h1>2.5. Arrays</h1>
+      <p>
+       Awk  provides  one-dimensional arrays.  Array elements are expressed as
+       <code>array[expr]</code>.  Expr is internally converted  to  string  type,  so,  for
+       example,  <code>A[1]</code>  and <code>A["1"]</code> are the same element and the actual index is
+       "1".  Arrays indexed by strings are called  associative  arrays.   Initially  an  array  is  empty;  elements  exist when first accessed.  An
+       expression, expr <b>in</b> array evaluates to 1 if <code>array[expr]</code> exists, else to
+       0.
+      </p>
+      <p>
+       There  is  a form of the <b>for</b> statement that loops over each index of an
+       array.
+      </p>
+      <p>
+      <code>for ( var in array ) statement</code>
+      </p>
+      <p>
+       sets <b>var</b> to each index of <b>array</b> and executes statement.  The order that
+       var transverses the indices of <b>array</b> is not defined.
+      </p>
+      <p>
+       The  statement,  <code>delete  array[expr]</code>,  causes <b>array[expr]</b> not to exist.
+       mawk supports an extension, <b>delete array</b>, which deletes all elements of
+       <b>array</b>.
+      </p>
+      <p>
+       Multidimensional  arrays  are  synthesized with concatenation using the
+       built-in  variable  <b>SUBSEP</b>.   <code>array[expr1,expr2]</code>   is   equivalent   to
+       <code>array[expr1 SUBSEP expr2]</code>.  Testing for a multidimensional element uses
+       a parenthesized index, such as:
+      </p>
+      <p>
+      <code>if ( (i, j) in A )  print A[i, j]</code>
+      </p>
+    </div>
+
+    <div id="programs-builtin-vars" class="container-fluid manual-header">
+      <h1>2.6. Built-in variables</h1>
+      <p>
+       The following variables are built-in  and  initialized  before  program
+       execution.
+      </p>
+      <ul>
+        <li>
+          <p>
+            <code>ARGC</code><br/>
+              number of command line arguments.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>ARGV</code><br/>
+              array of command line arguments, 0..ARGC-1.
+          </p>
+        </li>
+
+        <li>
+          <p>
+          <code>CONVFMT</code><br/>
+            format  for  internal conversion of numbers to string,
+                        initially = "%.6g".
+          </p>
+        </li> 
+        <li>
+          <p>
+            <code>ENVIRON</code><br/>
+              array indexed by environment variables. 
+              An  environment  string,  <code>var=value</code>  is  stored as 
+              <code>ENVIRON[var] = value</code>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>FILENAME</code><br/>
+              name of the current input file.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>FNR</code><br/>
+              current record number in <code>FILENAME</code>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>FS</code><br/>
+              splits records into fields as a regular expression.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>NF</code><br/>
+              number of fields in the current record.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>NF</code><br/>
+              number of fields in the current record.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>NR</code><br/>
+              current record number in the total input stream.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>OFMT</code><br/>
+              format for printing numbers; initially = "%.6g".
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>OFS</code><br/>
+              inserted between fields on output, initially = " ".
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>ORS</code><br/>
+              terminates each record on output, initially = "\n".
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <code>RLENGTH</code><br/>
+              length set by the last call to the built-in  function,
+                        <code>match()</code>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>RS</code><br/>
+              input record separator, initially = "\n".
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>RSTART</code><br/>
+              index set by the last call to <code>match()</code>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>SUBSEP</code><br/>
+              used  to  build multiple array subscripts, initially =
+                        "\034".
+          </p>
+        </li>
+      </ul>
+    </div>
+
+    <div id="programs-builtin-fn" class="container-fluid manual-header">
+      <h1>2.7. Built-in functions</h1>
+      <p>
+       String functions:
+      </p>
+      <ul>
+        <li>
+          <p>
+            <code>gsub(r,s,t)</code> <code>gsub(r,s)</code><br/>
+             Global substitution, every match of regular expression  r
+             in  variable  t  is  replaced by string s.  The number of
+             replacements is returned.  If t is omitted, <b>$0</b>  is  used.
+             An  &amp;  in  the  replacement  string  s is replaced by the
+             matched substring of t.  \&amp; and \\ put  literal &amp; and  \,
+             respectively, in the replacement string.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>index(s,t)</code><br/>
+              If  t  is  a  substring  of  s, then the position where t
+             starts is returned, else 0 is returned.  The first  char-
+             acter of s is in position 1.
+          </p>
+        </li>
+
+        <li>
+          <p>
+          <code>length(s)</code><br/>
+            Returns the length of string or array.  s.
+          </p>
+        </li> 
+        <li>
+          <p>
+            <code>match(s,r)</code><br/>
+              Returns  the  index of the first longest match of regular
+             expression r in string s.  Returns 0 if no match.   As  a
+             side  effect, <b>RSTART</b> is set to the return value.  <b>RLENGTH</b>
+             is set to the length of the match or -1 if no match.   If
+             the  empty  string is matched, <b>RLENGTH</b> is set to 0, and 1
+             is returned if the match is at the front, and length(s)+1
+             is returned if the match is at the back.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>split(s,A,r)</code>  <code>split(s,A)</code><br/>
+              String s is split into fields by regular expression r and
+             the fields are loaded into array A.  The number of fields
+             is returned.  See section 11 below for more detail.  If r
+             is omitted, <b>FS</b> is used.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>sprintf(format,expr-list)</code><br/>
+              Returns a string constructed from expr-list according  to
+              format.  See the description of <code>printf()</code> below..
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>sub(r,s,t)</code> <code>sub(r,s)</code><br/>
+              Single  substitution,  same  as <code>gsub()</code> except at most one
+              substitution.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>substr(s,i,n)</code> <code>substr(s,i)</code><br/>
+              Returns the substring of string s, starting at  index  i,
+             of  length n.  If n is omitted, the suffix of s, starting
+             at i is returned.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>tolower(s)</code><br/>
+              Returns a copy of s with all upper case  characters  
+              converted to lower case.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>toupper(s)</code><br/>
+              Returns  a  copy of s with all lower case characters 
+              converted to upper case.
+          </p>
+        </li>
+      </ul>
+
+      <p>
+        Time functions:
+      </p>
+
+      <ul>
+        <li>
+          <p>
+            <code>mktime(specification)</code><br/>
+             converts  a  date  specification  to a timestamp with the
+                     same units as  systime.   The  date  specification  is  a
+                     string  containing  the components of the date as decimal
+                     integers
+          </p>
+          <p>
+            <script src="https://gist.github.com/anonymous/c101acaef3591ab633e1a8a46544f4eb.js"></script>
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>strftime([format [, timestamp [, utc ]]])</code><br/>
+             formats  the  given timestamp using the format (passed to
+                     the C strftime function)
+          </p>
+          <p>
+            <script src="https://gist.github.com/anonymous/26daa6f7b6c2ff0106ce5b551fcb1fb6.js"></script>
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>systime()</code><br/>
+            returns the current time of day as the number of  seconds
+            since  the  Epoch  (1970-01-01 00:00:00 UTC on POSIX systems).
+          </p>
+          <p>
+            <script src="https://gist.github.com/anonymous/09f8f469e2e8027e919aaa5cbea3eac4.js"></script>
+          </p>
+        </li> 
+      </ul>
+      <p>
+      Arithmetic functions:
+      </p>
+      <ul>
+        <li>
+          <p>
+            <code>atan2(y,x)</code><br/>
+             Arctan of y/x between -pi and pi.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>cos(x)</code><br/>
+             Cosine function, x in radians.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>exp(x)</code><br/>
+            Exponential function.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>int(x)</code><br/>
+            Returns x truncated towards zero.
+          </p>
+        </li> 
+        <li>
+          <p>
+          <code>log(x)</code><br/>
+            Natural logarithm.
+          </p>
+        </li> 
+        <li>
+          <p>
+          <code>rand()</code><br/>
+            Returns a random number between zero and one.
+          </p>
+        </li> 
+        <li>
+          <p>
+          <code>sin(x)</code><br/>
+            Sine function, x in radians.
+          </p>
+        </li> 
+        <li>
+          <p>
+          <code>sqrt(x)</code><br/>
+            Returns square root of x.
+          </p>
+        </li> 
+        <li>
+          <p>
+          <code>srand(expr)</code> <code>srand()</code><br/>
+            Seeds the random number generator,  using  the  clock  if
+           expr  is  omitted,  and returns the value of the previous
+           seed.  <code>srand(expr)</code> is useful for repeating pseudo  random
+           sequences.
+          </p>
+        </li> 
+      </ul>
+    </div>
+
+    <div id="programs-io" class="container-fluid manual-header">
+      <h1>2.8. Input and output</h1>
+      <p>
+       There are two output statements, <code>print</code> and <code>printf</code>.
+      </p>
+      <ul>
+        <li>
+          <p>
+            <code>print</code><br/>
+             writes <b>$0</b>  <b>ORS</b> to standard output.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>print expr1, expr2, ..., exprn</code><br/>
+             writes <b>expr1 OFS expr2 OFS ... exprn ORS</b> to standard output.  
+             Numeric expressions are converted  to  string  with <b>OFMT</b>.
+          </p>
+        </li>
+        <li>
+          <p>
+          <code>printf format, expr-list</code><br/>
+            duplicates the printf C library function writing to standard 
+            output.  The complete ANSI C  format  specifications
+             are  recognized  with conversions 
+             <code>%c</code> <code>%d</code> <code>%e</code> <code>%E</code> 
+             <code>%f</code> <code>%g</code>
+             <code>%G</code> <code>%i</code> <code>%o</code> <code>%s</code> 
+             <code>%u</code> <code>%x</code> <code>%X</code> and <code>%%</code> 
+             and conversion  qualifiers <code>h</code> and <code>l</code>.
+          </p>
+        </li> 
+      </ul>
+      <p>The input function <code>getline</code> has the following variations.</p>
+      <ul>
+        <li>
+          <p>
+            <code>getline</code><br/>
+             reads into <b>$0</b>, updates the fields, <b>NF</b>, <b>NR</b> and <b>FNR</b>.
+          </p>
+        </li>
+        <li>
+          <p>
+            <code>getline var</code><br/>
+             reads the next record into <b>var</b>, updates <b>NR</b> and <b>FNR</b>.
+          </p>
+        </li>
+      </ul> 
+      <p>
+      Getline returns 0 on end-of-file, -1 on error, otherwise 1.
+      </p>
+    </div>
+
+    <div id="programs-user-fn" class="container-fluid manual-header">
+      <h1>2.9. User defined functions</h1>
+      <p>
+       The syntax for a user defined function is:
+      </p>
+      <p>
+      <code>function name( args ) { statements }</code>
+      </p>
+      <p>
+       The function body can contain a return statement:
+      </p>
+      <p>
+      <code>return opt_expr</code>
+      </p>
+      <p>
+       A  return  statement  is not required.  Function calls may be nested or
+       recursive.  Functions are passed expressions by  value  and  arrays  by
+       reference.   Extra  arguments serve as local variables and are initialized 
+       to null.  For example, <code>csplit(s,A)</code> puts each character of  s  into
+       array A and returns the length of s:
+      </p>
+      <p>
+        <script src="https://gist.github.com/anonymous/3beef1653e1c428fccb07f5cd5b55fd9.js"></script>
+      </p>
+      <p>
+      Putting  extra  space  between  passed arguments and local variables is
+       conventional.  Functions can be referenced before they are defined, but
+       the function name and the '(' of the arguments must touch to avoid confusion with concatenation.
+      </p>
+      <p>
+      A function parameter is normally a scalar value (number or string).  If
+       there  is a forward reference to a function using an array as a parameter, the function's corresponding  parameter  will  be  treated  as  an
+       array.
+      </p>
+    </div>
+
+    <div id="programs-split" class="container-fluid manual-header">
+      <h1>2.10. Splitting strings, records and files</h1>
+      <p>
+       Awk  programs  use the same algorithm to split strings into arrays with
+       <code>split()</code>, and records into fields on <b>FS</b>.  
+       mawk uses essentially the same
+       algorithm to split files into records on <b>RS</b>.
+      </p>
+      <p>
+      <code>split(expr,A,sep)</code>works as follows:
+      </p>
+      <ul>
+        <li>
+          <p>
+             If sep is omitted, it is replaced by <b>FS</b>.  
+             Sep can be an expression or regular expression.  
+             If it is  an  expression  of  nonstring type, it is converted to string.
+          </p>
+        </li>
+        <li>
+          <p>
+             If sep = " " (a single space), then &lt;SPACE&gt; is trimmed from the
+             front and back of expr, and sep becomes &lt;SPACE&gt;.  mawk  defines
+             &lt;SPACE&gt; as the regular expression <code>/[ \t\n]+/</code>.  Otherwise sep is
+             treated as a regular expression,  except  that  meta-characters
+             are  ignored  for  a string of length 1, e.g., <code>split(x, A, "*")</code>
+             and <code>split(x, A, /\*/)</code> are the same.
+          </p>
+        </li>
+        <li>
+          <p>
+             If expr is not string, it is converted to string.  If  expr  is
+             then the empty string "", <code>split()</code> returns 0 and A is set empty.
+             Otherwise, all non-overlapping, non-null and longest matches of
+             sep in expr, separate expr into fields which are loaded into A.
+             The fields are placed in A[1],  A[2],  ...,  A[n]  and  <code>split()</code>
+             returns  n, the number of fields which is the number of matches
+             plus one.  Data placed in A that looks numeric is typed  number
+             and string.
+        </p>
+        </li>
+      </ul>
+      <p>
+        Splitting  records  into  fields  works  the same except the pieces are
+       loaded into <b>$1</b>, <b>$2</b>,..., <b>$NF</b>.  If <b>$0</b> is empty, <b>NF</b> is set to 0 and all <b>$i</b>
+       to "".
+      </p>
+      <p>
+       If  <b>FS  =  ""</b>,  then mawk breaks the record into individual characters,
+       and, similarly, <code>split(s,A,"")</code> places the  individual  characters  of  s
+       into A.
+      </p>
+    </div>
+
+    <div id="practice-simple" class="container-fluid manual-header">
+      <h1>Simple Uses</h1>
+      <p>
+        <a href='index.html?gist=e625cdb4661bf560d0c94010c795d7d8' rel="nofollow" target="_blank">GIST</a> | In its simplest form, we can use awk like cat to simply print all lines of a text file out to the screen.
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/e625cdb4661bf560d0c94010c795d7d8.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=76be43c249adef9fc0f7feb35d677a69' rel="nofollow" target="_blank">GIST</a> | Let's try out awk's search filtering capabilities:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/76be43c249adef9fc0f7feb35d677a69.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=c94da98d7cdee865fdd3fbac206b8dc5' rel="nofollow" target="_blank">GIST</a> | We can use the action section to specify which pieces of information we want to print. For instance, to print only the first column:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/c94da98d7cdee865fdd3fbac206b8dc5.js"></script>
+      </p>
+    </div>
+
+    <div id="practice-vars" class="container-fluid manual-header">
+      <h1>Built-in Variables</h1>
+      <p>
+        <a href='index.html?gist=2617a81bf5ec753b9528e3e8e78b0621' rel="nofollow" target="_blank">GIST</a> | ARGC implies the number of arguments provided at the command line:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/2617a81bf5ec753b9528e3e8e78b0621.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=10579811ba2de1a874d1b924b4a65aa6' rel="nofollow" target="_blank">GIST</a> | ARGV is an array that stores the command-line arguments. The array's valid index ranges from 0 to ARGC-1:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/10579811ba2de1a874d1b924b4a65aa6.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=bb77b84c14ea2a5f09144ff8b6b15558' rel="nofollow" target="_blank">GIST</a> | FS represents the (input) field separator and its default value is space. You can also change this by using -F command line option:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/bb77b84c14ea2a5f09144ff8b6b15558.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=c586aa7ac8c6c354aafe49efecee325e' rel="nofollow" target="_blank">GIST</a> | NF represents the number of fields in the current record:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/c586aa7ac8c6c354aafe49efecee325e.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=271467fd80112e9f13e392e83054148d' rel="nofollow" target="_blank">GIST</a> | NR represents the number of the current record. For instance, the following example prints the record if the current record contains less than three fields:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/271467fd80112e9f13e392e83054148d.js"></script>
+      </p>
+    </div>
+
+    <div id="practice-arrays" class="container-fluid manual-header">
+      <h1>Arrays</h1>
+      <p>
+      AWK has associative arrays and one of the best thing about it is – the indexes need not to be continuous set of number; you can use either string or number as an array index. Also, there is no need to declare the size of an array in advance – arrays can expand/shrink at runtime.
+      </p>
+      <p>
+        <a href='index.html?gist=bc4f6914346dbf43c184e812655fe8bb' rel="nofollow" target="_blank">GIST</a> | To gain more insight on array, let us create and access the elements of an array:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/bc4f6914346dbf43c184e812655fe8bb.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=db9b4dd2da9e3de2e5929238b56d629a' rel="nofollow" target="_blank">GIST</a> | The following example deletes the element orange:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/db9b4dd2da9e3de2e5929238b56d629a.js"></script>
+      </p>
+
+      <p>
+      AWK only supports one-dimensional arrays. But you can easily simulate a multi-dimensional array using the one-dimensional array itself.
+      </p>
+
+      <p>
+        <a href='index.html?gist=e4a04cbdd549f23392a28dd736799bb7' rel="nofollow" target="_blank">GIST</a> | The following example simulates a 2-D array:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/e4a04cbdd549f23392a28dd736799bb7.js"></script>
+      </p>
+    </div>
+
+    <div id="practice-flow" class="container-fluid manual-header">
+      <h1>Control Flow</h1>
+      <p>
+        <a href='index.html?gist=099e4ecd444c129ccefff3f90df1fc53' rel="nofollow" target="_blank">GIST</a> | if else:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/099e4ecd444c129ccefff3f90df1fc53.js"></script>
+      </p>
+
+    </div>
+
+    <div id="practice-loops" class="container-fluid manual-header">
+      <h1>Loops</h1>
+      <p>
+        <a href='index.html?gist=075aba785b24dab1e31918d3495bcf5c' rel="nofollow" target="_blank">GIST</a> | Initially, the for statement performs initialization action, then it checks the condition. If the condition is true, it executes actions, thereafter it performs increment or decrement operation. The loop execution continues as long as the condition is true. For instance, the following example prints 1 to 5 using for loop:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/075aba785b24dab1e31918d3495bcf5c.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=10daa267e90869f5f980af7fe81112e6' rel="nofollow" target="_blank">GIST</a> | The following example prints 1 to 3 using while loop:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/10daa267e90869f5f980af7fe81112e6.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=86fd05b63e7cdf9d50656492e68a7f05' rel="nofollow" target="_blank">GIST</a> | The following example prints 1 to 5 numbers using do-while loop:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/86fd05b63e7cdf9d50656492e68a7f05.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=072701febc0d25dba8f16c7a1c7d5b20' rel="nofollow" target="_blank">GIST</a> | Here is an example which ends the loop when the sum becomes greater than 50:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/072701febc0d25dba8f16c7a1c7d5b20.js"></script>
+      </p>
+
+      <p>
+        <a href='index.html?gist=e5c47a2f61d11d55b09d82353c51bafa' rel="nofollow" target="_blank">GIST</a> | The following example uses continue statement to print the even numbers between 1 to 20:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/e5c47a2f61d11d55b09d82353c51bafa.js"></script>
+      </p>
+    </div>
+
+    <div id="practice-user-fn" class="container-fluid manual-header">
+      <h1>User Defined Functions</h1>
+      <p>
+        <a href='index.html?gist=ace6696d13d9b2b6e7e21e7c155c234b' rel="nofollow" target="_blank">GIST</a> | Let us write two functions that calculate the minimum and the maximum number and call these functions from another function called main:
+      </p>      
+      <p>
+        <script src="https://gist.github.com/anonymous/ace6696d13d9b2b6e7e21e7c155c234b.js"></script>
+      </p>
+
+    </div>
+
+
+
+    <div id="further-reading" class="container-fluid manual-header">
+
+      <h2 class="text-center text-primary">Further Reading</h2>
+
+      <ul class="text-center list-unstyled">
+
+        <li>
+          <p>
+            <a href='http://invisible-island.net/mawk/manpage/mawk.html' rel="nofollow">Official MAWK manual</a>
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <a href='https://www.gnu.org/software/gawk/manual/gawk.html' rel="nofollow">The GNU Awk User's Guide</a>
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <a href='https://www.digitalocean.com/community/tutorials/how-to-use-the-awk-language-to-manipulate-text-in-linux' rel="nofollow">How To Use the AWK language to Manipulate Text in Linux</a>
+          </p>
+        </li>
+        <li>
+          <p>
+            <a href='http://www.grymoire.com/Unix/Awk.html' rel="nofollow">Awk - An Introduction and Tutorial by Bruce Barnett</a>
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <a href='http://www.tutorialspoint.com/awk/' rel="nofollow">TutorialsPoint: Awk Tutorial</a>
+          </p>
+        </li>
+
+        <li>
+          <p>
+            <a href='http://www.pement.org/awk/awk1line.txt' rel="nofollow">HANDY ONE-LINE SCRIPTS FOR AWK</a>
+          </p>
+        </li>
+      </ul>
+
+    </div>
+    <footer class="footer">
+      <div class="container-fluid text-muted text-center">
+        Designed and maintained with ❤ by <a href="mailto:o.mazko%20%5Bat%5D%20mail.ru?subject=awk.js" rel="nofollow" onmouseover="var split = this.href.split('?');  split[0] = split[0].replace('%20%5Bat%5D%20','@'); this.href = split.join('?');">Oleg Mazko</a>
+      </div>
+    </footer>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="assets/libs/jquery/1.11.3/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="assets/bootstrap-3.3.6-dist/js/bootstrap.min.js"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="assets/libs/ie10-viewport-bug-workaround.js"></script>
+
+  </body>
+</html>
