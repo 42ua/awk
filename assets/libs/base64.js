@@ -36,14 +36,15 @@ $(function() {
       }
 
       parseId = setTimeout(function () {
-        var input = b64DecodeUserFriendly($("#awk-stdin").val()),
+        var input = b64DecodeUserFriendly($("#awk-base64-stdin").val()),
             args = $("#awk-cmd").val(),
             output = fn_mawk(input, args);
+        $("#awk-stdin").val(input);
         $("#awk-stdout").val(output.replace(/\n$/, ""));
       }, 333);
     }
 
-    $("#awk-stdin").keyup(parse);
+    $("#awk-base64-stdin").keyup(parse);
     $("#awk-cmd").keyup(parse);
 
   })();
@@ -68,7 +69,7 @@ $(function() {
         JSON.stringify({
           "description": "mawk.js",
           "files": {
-            "stdin": {"content": $("#awk-stdin").val()},
+            "stdin": {"content": $("#awk-base64-stdin").val()},
             "stdout": {"content": $("#awk-stdout").val()},
             "args": {"content": $("#awk-cmd").val()}
           }
@@ -126,7 +127,7 @@ $(function() {
     // document.ready() callbacks are called in the order they were registered. 
     // If you register your testing callback first, it will be called first
     // keyup() listener is registered earlier in this file
-    $("#awk-stdin").val(stdin).keyup();
+    $("#awk-base64-stdin").val(stdin).keyup();
   })
   .fail(function( e ) {
     $(".user-errors-here").append( "<div class='alert alert-danger alert-dismissible fade in' role=alert>" + 

@@ -62,14 +62,18 @@
 
       /* else */
 
-      #awk-cmd {
+      #awk-base64-stdin, #awk-cmd {
         min-height: 34px;
         resize: vertical;
       }
 
+      #awk-base64-stdin {
+        height: 34px;
+      }
+
       /* http://stackoverflow.com/q/13446005 */
 
-      #awk-stdout {
+      #awk-stdin, #awk-stdout {
         white-space: pre;
         overflow-wrap: normal;
         overflow-x: scroll;
@@ -127,8 +131,8 @@
       <div class="row no-gutter">
         <div class="col-sm-6">
           <div class="form-group awk-input">
-            <label for="awk-stdin">STDIN (base64 --wrap=0):</label>
-            <textarea class="form-control" rows="20" id="awk-stdin" autocomplete="off"></textarea>
+            <label for="awk-stdin">STDIN:</label>
+            <textarea class="form-control" rows="20" id="awk-stdin" autocomplete="off" readonly></textarea>
           </div>
         </div>
         <div class="col-sm-6">
@@ -137,6 +141,11 @@
             <textarea class="form-control" rows="20" id="awk-stdout" autocomplete="off" readonly></textarea>
           </div>
         </div>
+      </div>
+
+      <div class="form-group">
+        <label for="awk-base64-stdin">STDIN (base64 --wrap=0):</label>
+        <textarea class="form-control" rows="1" id="awk-base64-stdin" autocomplete="off"></textarea>
       </div>
     </div>
 
