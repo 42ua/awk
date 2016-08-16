@@ -106,7 +106,7 @@ $(function() {
       return decodeURIComponent(results[2].replace(/\+/g, " "));
   }
 
-  var gistId = getParameterByName('gist') || '0dd0d6f36d82c25eb9ff1556f4b6567d',
+  var gistId = getParameterByName('gist') || '7f6aeb732c52126d653d1d81dde063d3',
       stdinGist = getParameterByName('stdin') || 'stdin',
       argsGist = getParameterByName('args') || 'args',
       doc_ready = $.Deferred();
