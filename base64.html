@@ -8,7 +8,7 @@
     <link rel="icon" type="image/png" href="assets/gnu-head-mini.png" />
 
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <title>AWK live editor</title>
+    <title>AWK live editor(base64)</title>
 
     <!-- Bootstrap -->
     <link href="assets/bootstrap-3.3.6-dist/css/bootstrap.min.css" rel="stylesheet">
@@ -69,7 +69,7 @@
 
       /* http://stackoverflow.com/q/13446005 */
 
-      #awk-stdin, #awk-stdout {
+      #awk-stdout {
         white-space: pre;
         overflow-wrap: normal;
         overflow-x: scroll;
@@ -106,7 +106,6 @@
                 <li><a href="#">-W version</a></li>
               </ul>
             </li>
-            <li><a href="base64.html"><span class="glyphicon glyphicon-import"></span> base64</a></li>
             <li><a href="help.html"><span class="glyphicon glyphicon-book"></span> Help</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -128,7 +127,7 @@
       <div class="row no-gutter">
         <div class="col-sm-6">
           <div class="form-group awk-input">
-            <label for="awk-stdin">STDIN:</label>
+            <label for="awk-stdin">STDIN(base64):</label>
             <textarea class="form-control" rows="20" id="awk-stdin" autocomplete="off"></textarea>
           </div>
         </div>
@@ -156,6 +155,6 @@
 
     <!-- sed.js -->
     <script src="assets/libs/mawk.js"></script>
-    <script src="assets/libs/main.js"></script>
+    <script src="assets/libs/base64.js"></script>
   </body>
 </html>
