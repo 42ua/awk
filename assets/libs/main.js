@@ -4,7 +4,7 @@ $(function() {
 
   (function() {
 
-    var parseId;
+    var parseId, cacheInput, cacheArgs;
 
     function parse() {
       if (parseId) {
@@ -13,14 +13,19 @@ $(function() {
 
       parseId = setTimeout(function () {
         var input = $("#awk-stdin").val(),
-            args = $("#awk-cmd").val(),
-            output = fn_mawk(input, args);
-        $("#awk-stdout").val(output.replace(/\n$/, ""));
+            args = $("#awk-cmd").val();
+
+        if (cacheInput !== input || cacheArgs !== args){
+          cacheInput = input;
+          cacheArgs = args;
+          $("#awk-stdout").val(fn_mawk(input, args).replace(/\n$/, ""));
+        }
+
       }, 333);
     }
 
-    $("#awk-stdin").keyup(parse);
-    $("#awk-cmd").keyup(parse);
+    $("#awk-stdin").on('keyup input', parse);
+    $("#awk-cmd").on('keyup input', parse);
 
   })();
 

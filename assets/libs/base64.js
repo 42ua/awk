@@ -28,7 +28,7 @@ $(function() {
       }
     }
 
-    var parseId;
+    var parseId, cacheInput, cacheArgs;
 
     function parse() {
       if (parseId) {
@@ -37,15 +37,20 @@ $(function() {
 
       parseId = setTimeout(function () {
         var input = b64DecodeUserFriendly($("#awk-base64-stdin").val()),
-            args = $("#awk-cmd").val(),
-            output = fn_mawk(input, args);
-        $("#awk-stdin").val(input);
-        $("#awk-stdout").val(output.replace(/\n$/, ""));
+            args = $("#awk-cmd").val();
+
+        if (cacheInput !== input || cacheArgs !== args){
+          cacheInput = input;
+          cacheArgs = args;
+          $("#awk-stdin").val(input);
+          $("#awk-stdout").val(fn_mawk(input, args).replace(/\n$/, ""));
+        }
+
       }, 333);
     }
 
-    $("#awk-base64-stdin").keyup(parse);
-    $("#awk-cmd").keyup(parse);
+    $("#awk-base64-stdin").on('keyup input', parse);
+    $("#awk-cmd").on('keyup input', parse);
 
   })();
 
